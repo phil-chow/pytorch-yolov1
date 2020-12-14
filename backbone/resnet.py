@@ -1,5 +1,14 @@
 import torch
 import torch.nn as nn
+from torch.utils import model_zoo
+
+model_urls = {
+    'resnet18': 'https://download.pytorch.org/models/resnet18-5c106cde.pth',
+    'resnet34': 'https://download.pytorch.org/models/resnet34-333f7ec4.pth',
+    'resnet50': 'https://download.pytorch.org/models/resnet50-19c8e357.pth',
+    'resnet101': 'https://download.pytorch.org/models/resnet101-5d3b4d8f.pth',
+    'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth',
+}
 
 
 def conv_3x3(in_channels, out_channels, stride=1):
@@ -79,10 +88,20 @@ class ResNet(nn.Module):
 
 def resnet18(pretrained=False, **kwargs):
     model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls["resnet18"]), strict=False)
+    return model
+
+
+def resnet34(pretrained=False, **kwargs):
+    model = ResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls["resnet34"]), strict=False)
     return model
 
 
 if __name__ == '__main__':
-    resnet18_model = resnet18()
-    print(resnet18_model)
-
+    model = resnet18(pretrained=True)
+    input = torch.rand([1, 3, 224, 224])
+    out = model(input)
+    print(out.shape)
