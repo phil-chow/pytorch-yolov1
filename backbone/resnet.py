@@ -41,9 +41,11 @@ class ResNet(nn.Module):
     def __init__(self, block, layers, **kwargs):
         super(ResNet, self).__init__()
         self.in_channels = 64
+        # 输入图像228*228，7*7的卷积核，padding 3，stride 2，之后图像尺寸112*112
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
+        # 图像尺寸 112*112->56*56
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layers(block, 64, layers[0])
         self.layer2 = self._make_layers(block, 128, layers[1], stride=2)
@@ -63,6 +65,7 @@ class ResNet(nn.Module):
 
     def _make_layers(self, block, channels, layer, stride=1):
         downsample = None
+        # 这里的下采样是为了处理卷积层之间channel不一致的情况，64->128,128->256...
         if stride != 1 or self.in_channels != channels:
             downsample = nn.Sequential(conv_1x1(self.in_channels, channels, stride=stride),
                                        nn.BatchNorm2d(channels))
@@ -82,3 +85,4 @@ def resnet18(pretrained=False, **kwargs):
 if __name__ == '__main__':
     resnet18_model = resnet18()
     print(resnet18_model)
+
