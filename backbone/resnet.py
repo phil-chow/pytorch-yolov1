@@ -38,7 +38,7 @@ class BasicBlock(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, block, layers):
+    def __init__(self, block, layers, **kwargs):
         super(ResNet, self).__init__()
         self.in_channels = 64
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
@@ -72,3 +72,13 @@ class ResNet(nn.Module):
         for _ in range(1, layer):
             layers.append(block(self.in_channels, channels))
         return nn.Sequential(*layers)
+
+
+def resnet18(pretrained=False, **kwargs):
+    model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
+    return model
+
+
+if __name__ == '__main__':
+    resnet18_model = resnet18()
+    print(resnet18_model)
